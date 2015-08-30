@@ -32,7 +32,6 @@ public class SphereView  extends View
     static final int refreshInterval = 20;
     static final double minErr = 0.01;
     static final double deltaT = refreshInterval / 1000.0;
-    //static final double e = 2.71828;
 
     double rotSpeed = 0;
     double rotAxisX;
