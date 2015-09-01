@@ -24,6 +24,8 @@ public class SphereView  extends View
     ArrayList<TextPoint> points = new ArrayList<>();
     static int pointCount ;
 
+    Paint p=new Paint();
+
     static final int alphaMax = 255;
     static final int alphaMin = 100;
     static final int textSizeMax = 35;
@@ -94,6 +96,17 @@ public class SphereView  extends View
 
         ArrayList<String> tags = new ArrayList<>();
 
+        String input = new String("Chance is a word which is in common use in everyday living. " +
+                "The radio reports speaking of tomorrow¡¯s weather may say: There is a sixty percent chance of rain." +
+                " You might say: There is a small chance that I shall live to be one hundred years old. " +
+                "Scientists also use the word chance. A seismologist may be interested in the question: " +
+                "What is the chance that there will be an earthquake of a certain size in Southern California next year?");
+        String[] res = input.split("\\S", ringCount * (ptsPairCount - 1) * 2 + 2);
+        for(int count = 0;count < res.length; ++count)
+        {
+            tags.add(res[count]);
+        }
+
         try {
             if(180.0 % ringCount != 0.0 || 180.0 % ptsPairCount != 0.0)
                 throw new Exception();
@@ -105,7 +118,7 @@ public class SphereView  extends View
         }
 
         try {
-            if(tags.size() <= ringCount * (ptsPairCount - 1) * 2 + 2)
+            if(tags.size() < ringCount * (ptsPairCount - 1) * 2 + 2)
                 throw new Exception();
         }
         catch(Exception e)
@@ -216,7 +229,6 @@ public class SphereView  extends View
             }
         }
 
-        Paint p=new Paint();
         p.setTextAlign(Paint.Align.CENTER);
         p.setAntiAlias(true);
         canvas.drawColor(Color.WHITE);
