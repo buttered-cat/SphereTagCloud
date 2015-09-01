@@ -21,7 +21,7 @@ public class SphereView  extends View
     static final double radiusCpst = 30;
     boolean isCoordInfoSet = false;
 
-    ArrayList<TextPoint> points = new ArrayList<TextPoint>();
+    ArrayList<TextPoint> points = new ArrayList<>();
     static int pointCount ;
 
     static final int alphaMax = 255;
@@ -32,6 +32,8 @@ public class SphereView  extends View
     static final int refreshInterval = 20;
     static final double minErr = 0.01;
     static final double deltaT = refreshInterval / 1000.0;
+    static final int ringCount = 6;
+    static final int ptsPairCount = ringCount;
 
     double rotSpeed = 0;
     double rotAxisX;
@@ -81,14 +83,70 @@ public class SphereView  extends View
 
     private void initPoints()
     {
-        pointCount = 6;
+        /*pointCount = 6;
         //TextPoint point = new TextPoint(0.0, 0.0, radius, "Hell0");
         points.add(new TextPoint(0.0, 0.0, radius, "Hell0"));
         points.add(new TextPoint(0.0, 0.0, -radius, "Bye"));
         points.add(new TextPoint(-radius, 0.0, 0.0, "Jimi"));
         points.add(new TextPoint(radius, 0.0, 0.0, "Larry"));
         points.add(new TextPoint(0.0, -radius, 0.0, "Brin"));
-        points.add(new TextPoint(0.0, radius, 0.0, "Jane"));
+        points.add(new TextPoint(0.0, radius, 0.0, "Jane"));*/
+
+        ArrayList<String> tags = new ArrayList<>();
+
+        try {
+            if(180.0 % ringCount != 0.0 || 180.0 % ptsPairCount != 0.0)
+                throw new Exception();
+        }
+        catch(Exception e)
+        {
+            points.add(new TextPoint(radius, 0, 0, "invalid ringCount or ptsPairCount!"));
+            return;
+        }
+
+        try {
+            if(tags.size() <= ringCount * (ptsPairCount - 1) * 2 + 2)
+                throw new Exception();
+        }
+        catch(Exception e)
+        {
+            points.add(new TextPoint(radius, 0, 0, "too few tags!"));
+            return;
+        }
+
+        Iterator it = tags.iterator();
+        double theta;
+        double k;
+
+        points.add(new TextPoint(radius, 0, 0, (String)it.next()));
+        points.add(new TextPoint(-radius, 0, 0, (String)it.next()));
+
+        for(int curRing = 0; curRing < ringCount/* && it.hasNext()*/; ++curRing)
+        {
+            if(curRing * (180.0 / ringCount) != 90)
+            {
+                k = Math.tan(curRing * (180.0 / ringCount));
+                for (int curPt = 1; curPt < ptsPairCount/* && it.hasNext()*/; ++curPt)
+                {
+                    theta = curPt * (180.0 / ptsPairCount);
+                    double y = radius * Math.sin(theta) / Math.sqrt(1.0 + k*k);
+                    points.add(new TextPoint(radius * Math.cos(theta), y, k * y, (String)it.next()));
+                    theta += 180.0;
+                    y = radius * Math.sin(theta) / Math.sqrt(1.0 + k*k);
+                    points.add(new TextPoint(radius * Math.cos(theta), y, k * y, (String)it.next()));
+                }
+            }
+            else
+            {
+                for (int curPt = 1; curPt < ptsPairCount/* && it.hasNext()*/; ++curPt)
+                {
+                    theta = curPt * (180.0 / ptsPairCount);
+                    points.add(new TextPoint(radius * Math.cos(theta), 0, radius * Math.sin(theta), (String)it.next()));
+                    theta += 180.0;
+                    points.add(new TextPoint(radius * Math.cos(theta), 0, radius * Math.sin(theta), (String)it.next()));
+                }
+            }
+        }
 
         handler.post(refresher);
     }
