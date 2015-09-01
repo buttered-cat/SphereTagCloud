@@ -97,12 +97,12 @@ public class SphereView  extends View
         ArrayList<String> tags = new ArrayList<>();
 
         String input = new String("Chance is a word which is in common use in everyday living. " +
-                "The radio reports speaking of tomorrow¡¯s weather may say: There is a sixty percent chance of rain." +
+                "The radio reports speaking of tomorrow`s weather may say: There is a sixty percent chance of rain." +
                 " You might say: There is a small chance that I shall live to be one hundred years old. " +
                 "Scientists also use the word chance. A seismologist may be interested in the question: " +
                 "What is the chance that there will be an earthquake of a certain size in Southern California next year?");
-        String[] res = input.split("\\S", ringCount * (ptsPairCount - 1) * 2 + 2);
-        for(int count = 0;count < res.length; ++count)
+        String[] res = input.split("\\s+", ringCount * (ptsPairCount - 1) * 2 + 2 + 1);
+        for(int count = 0;count < res.length - 1; ++count)
         {
             tags.add(res[count]);
         }
@@ -128,7 +128,7 @@ public class SphereView  extends View
         }
 
         Iterator it = tags.iterator();
-        double theta;
+        double degrees;
         double k;
 
         points.add(new TextPoint(radius, 0, 0, (String)it.next()));
@@ -141,22 +141,22 @@ public class SphereView  extends View
                 k = Math.tan(curRing * (180.0 / ringCount));
                 for (int curPt = 1; curPt < ptsPairCount/* && it.hasNext()*/; ++curPt)
                 {
-                    theta = curPt * (180.0 / ptsPairCount);
-                    double y = radius * Math.sin(theta) / Math.sqrt(1.0 + k*k);
-                    points.add(new TextPoint(radius * Math.cos(theta), y, k * y, (String)it.next()));
-                    theta += 180.0;
-                    y = radius * Math.sin(theta) / Math.sqrt(1.0 + k*k);
-                    points.add(new TextPoint(radius * Math.cos(theta), y, k * y, (String)it.next()));
+                    degrees = curPt * (180.0 / ptsPairCount);
+                    double y = radius * Math.sin(Math.toRadians(degrees)) / Math.sqrt(1.0 + k*k);
+                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), y, k * y, (String)it.next()));
+                    degrees += 180.0;
+                    y = radius * Math.sin(Math.toRadians(degrees)) / Math.sqrt(1.0 + k*k);
+                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), y, k * y, (String)it.next()));
                 }
             }
             else
             {
                 for (int curPt = 1; curPt < ptsPairCount/* && it.hasNext()*/; ++curPt)
                 {
-                    theta = curPt * (180.0 / ptsPairCount);
-                    points.add(new TextPoint(radius * Math.cos(theta), 0, radius * Math.sin(theta), (String)it.next()));
-                    theta += 180.0;
-                    points.add(new TextPoint(radius * Math.cos(theta), 0, radius * Math.sin(theta), (String)it.next()));
+                    degrees = curPt * (180.0 / ptsPairCount);
+                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), 0, radius * Math.sin(Math.toRadians(degrees)), (String)it.next()));
+                    degrees += 180.0;
+                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), 0, radius * Math.sin(Math.toRadians(degrees)), (String)it.next()));
                 }
             }
         }
