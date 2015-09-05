@@ -34,7 +34,7 @@ public class SphereView  extends View
     static final int refreshInterval = 20;
     static final double minErr = 0.01;
     static final double deltaT = refreshInterval / 1000.0;
-    static final int ringCount = 6;
+    static final int ringCount = 2;
     static final int ptsPairCount = ringCount;
 
     double rotSpeed = 0;
@@ -213,19 +213,21 @@ public class SphereView  extends View
         if(rotSpeed != 0)
         {
             double theta = deltaT * rotSpeed;
-            double C = Math.cos(theta);
+            /*double C = Math.cos(theta);
             double S = Math.sin(theta);
-            double A = 1 - C;
+            double A = 1 - C;*/
 
             for(Iterator it = points.iterator(); it.hasNext();)
             {
-                TextPoint pt = (TextPoint)it.next();
+                /*TextPoint pt = (TextPoint)it.next();
                 double x = pt.x;
                 double y = pt.y;
                 double z = pt.z;
                 pt.x = (A * rotAxisX * rotAxisX + C) * x + (A * rotAxisX * rotAxisY - S * rotAxisZ) * y + (A * rotAxisX * rotAxisZ + S * rotAxisY) * z;
                 pt.y = (A * rotAxisX * rotAxisY + S * rotAxisZ) * x + (A * rotAxisY * rotAxisY + C) * y + (A * rotAxisY * rotAxisZ - S * rotAxisX) * z;
                 pt.z = (A * rotAxisX * rotAxisZ - S * rotAxisY) * x + (A * rotAxisY * rotAxisZ + S * rotAxisX) * y + (A * rotAxisZ * rotAxisZ + C) * z;
+                */
+                transform((TextPoint)it.next(), theta);
             }
         }
 
@@ -242,6 +244,21 @@ public class SphereView  extends View
             canvas.drawText(pt.text, (float)(pt.x + originX), (float)(pt.y + originY), p);
         }
 
+    }
+
+    TextPoint transform(TextPoint pt, double rTheta)
+    {
+        double C = Math.cos(rTheta);
+        double S = Math.sin(rTheta);
+        double A = 1 - C;
+
+        double x = pt.x;
+        double y = pt.y;
+        double z = pt.z;
+        pt.x = (A * rotAxisX * rotAxisX + C) * x + (A * rotAxisX * rotAxisY - S * rotAxisZ) * y + (A * rotAxisX * rotAxisZ + S * rotAxisY) * z;
+        pt.y = (A * rotAxisX * rotAxisY + S * rotAxisZ) * x + (A * rotAxisY * rotAxisY + C) * y + (A * rotAxisY * rotAxisZ - S * rotAxisX) * z;
+        pt.z = (A * rotAxisX * rotAxisZ - S * rotAxisY) * x + (A * rotAxisY * rotAxisZ + S * rotAxisX) * y + (A * rotAxisZ * rotAxisZ + C) * z;
+        return pt;
     }
 
 }
