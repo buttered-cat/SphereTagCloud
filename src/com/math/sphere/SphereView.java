@@ -227,7 +227,7 @@ public class SphereView  extends View
                 pt.y = (A * rotAxisX * rotAxisY + S * rotAxisZ) * x + (A * rotAxisY * rotAxisY + C) * y + (A * rotAxisY * rotAxisZ - S * rotAxisX) * z;
                 pt.z = (A * rotAxisX * rotAxisZ - S * rotAxisY) * x + (A * rotAxisY * rotAxisZ + S * rotAxisX) * y + (A * rotAxisZ * rotAxisZ + C) * z;
                 */
-                transform((TextPoint)it.next(), theta);
+                transform((TextPoint)it.next(), theta, rotAxisX, rotAxisY, rotAxisZ);
             }
         }
 
@@ -246,7 +246,7 @@ public class SphereView  extends View
 
     }
 
-    TextPoint transform(TextPoint pt, double rTheta)
+    TextPoint transform(TextPoint pt, double rTheta, double rotAxisX, double rotAxisY, double rotAxisZ)
     {
         double C = Math.cos(rTheta);
         double S = Math.sin(rTheta);
