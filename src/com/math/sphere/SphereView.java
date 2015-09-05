@@ -33,9 +33,11 @@ public class SphereView  extends View
     static final double maxSpeed = 3.0;
     static final int refreshInterval = 20;
     static final double minErr = 0.01;
+    static final double degreesMinErr = minErr;
     static final double deltaT = refreshInterval / 1000.0;
     static final int ringCount = 2;
-    static final int ptsPairCount = ringCount;
+//    static final int ptsPairCount = ringCount;
+    static final int ptsPerRing = ringCount * 2;
 
     double rotSpeed = 0;
     double rotAxisX;
@@ -101,7 +103,7 @@ public class SphereView  extends View
                 " You might say: There is a small chance that I shall live to be one hundred years old. " +
                 "Scientists also use the word chance. A seismologist may be interested in the question: " +
                 "What is the chance that there will be an earthquake of a certain size in Southern California next year?");
-        String[] res = input.split("\\s+", ringCount * (ptsPairCount - 1) * 2 + 2 + 1);
+        String[] res = input.split("\\s+", ringCount * (/*ptsPairCount*/ptsPerRing - 1) * 2 + 2 + 1);
         for(int count = 0;count < res.length - 1; ++count)
         {
             tags.add(res[count]);
@@ -118,7 +120,7 @@ public class SphereView  extends View
         }
 
         try {
-            if(tags.size() < ringCount * (ptsPairCount - 1) * 2 + 2)
+            if(tags.size() < ringCount * (/*ptsPairCount*/ptsPerRing - 1) * 2 + 2)
                 throw new Exception();
         }
         catch(Exception e)
@@ -128,38 +130,62 @@ public class SphereView  extends View
         }
 
         Iterator it = tags.iterator();
-        double degrees;
-        double k;
+        /*double degrees;
+        double k;*/
 
-        points.add(new TextPoint(radius, 0, 0, (String)it.next()));
-        points.add(new TextPoint(-radius, 0, 0, (String)it.next()));
+        points.add(new TextPoint(0, 0, radius, (String)it.next()));
+        points.add(new TextPoint(0, 0, -radius, (String)it.next()));
 
-        for(int curRing = 0; curRing < ringCount/* && it.hasNext()*/; ++curRing)
+        for(int curRing = 0; curRing < ringCount; ++curRing)
         {
-            if(curRing * (180.0 / ringCount) != 90)
+            double axisX = Math.cos(Math.PI / ringCount * curRing);
+            double axisY = Math.sin(Math.PI / ringCount * curRing);
+            double temp = axisX;
+            axisX = -axisY;
+            axisY = temp;
+
+            TextPoint formerPt = new TextPoint(0, 0, radius, "");
+
+            for(int curPt = 1; curPt < ptsPerRing && it.hasNext(); ++curPt)
             {
-                k = Math.tan(curRing * (180.0 / ringCount));
-                for (int curPt = 1; curPt < ptsPairCount/* && it.hasNext()*/; ++curPt)
+                if(360 / ptsPerRing * curPt > 180 - degreesMinErr && 360 / ptsPerRing * curPt < 180 + degreesMinErr)
+                    continue;
+                else
                 {
-                    degrees = curPt * (180.0 / ptsPairCount);
-                    double y = radius * Math.sin(Math.toRadians(degrees)) / Math.sqrt(1.0 + k*k);
-                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), y, k * y, (String)it.next()));
-                    degrees += 180.0;
-                    y = radius * Math.sin(Math.toRadians(degrees)) / Math.sqrt(1.0 + k*k);
-                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), y, k * y, (String)it.next()));
+                    formerPt = transform(formerPt, 2 * Math.PI / ptsPerRing, axisX, axisY, 0, true);
+                    formerPt.text = (String)it.next();
+                    points.add(formerPt);
                 }
-            }
-            else
-            {
-                for (int curPt = 1; curPt < ptsPairCount/* && it.hasNext()*/; ++curPt)
-                {
-                    degrees = curPt * (180.0 / ptsPairCount);
-                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), 0, radius * Math.sin(Math.toRadians(degrees)), (String)it.next()));
-                    degrees += 180.0;
-                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), 0, radius * Math.sin(Math.toRadians(degrees)), (String)it.next()));
-                }
+
             }
         }
+
+//        for(int curRing = 0; curRing < ringCount/* && it.hasNext()*/; ++curRing)
+//        {
+//            if(curRing * (180.0 / ringCount) != 90)
+//            {
+//                k = Math.tan(curRing * (180.0 / ringCount));
+//                for (int curPt = 1; curPt < ptsPairCount/* && it.hasNext()*/; ++curPt)
+//                {
+//                    degrees = curPt * (180.0 / ptsPairCount);
+//                    double y = radius * Math.sin(Math.toRadians(degrees)) / Math.sqrt(1.0 + k*k);
+//                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), y, k * y, (String)it.next()));
+//                    degrees += 180.0;
+//                    y = radius * Math.sin(Math.toRadians(degrees)) / Math.sqrt(1.0 + k*k);
+//                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), y, k * y, (String)it.next()));
+//                }
+//            }
+//            else
+//            {
+//                for (int curPt = 1; curPt < ptsPairCount/* && it.hasNext()*/; ++curPt)
+//                {
+//                    degrees = curPt * (180.0 / ptsPairCount);
+//                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), 0, radius * Math.sin(Math.toRadians(degrees)), (String)it.next()));
+//                    degrees += 180.0;
+//                    points.add(new TextPoint(radius * Math.cos(Math.toRadians(degrees)), 0, radius * Math.sin(Math.toRadians(degrees)), (String)it.next()));
+//                }
+//            }
+//        }
 
         handler.post(refresher);
     }
@@ -227,7 +253,7 @@ public class SphereView  extends View
                 pt.y = (A * rotAxisX * rotAxisY + S * rotAxisZ) * x + (A * rotAxisY * rotAxisY + C) * y + (A * rotAxisY * rotAxisZ - S * rotAxisX) * z;
                 pt.z = (A * rotAxisX * rotAxisZ - S * rotAxisY) * x + (A * rotAxisY * rotAxisZ + S * rotAxisX) * y + (A * rotAxisZ * rotAxisZ + C) * z;
                 */
-                transform((TextPoint)it.next(), theta, rotAxisX, rotAxisY, rotAxisZ);
+                transform((TextPoint)it.next(), theta, rotAxisX, rotAxisY, rotAxisZ, false);
             }
         }
 
@@ -246,7 +272,7 @@ public class SphereView  extends View
 
     }
 
-    TextPoint transform(TextPoint pt, double rTheta, double rotAxisX, double rotAxisY, double rotAxisZ)
+    TextPoint transform(TextPoint pt, double rTheta, double rotAxisX, double rotAxisY, double rotAxisZ, boolean createPoint)
     {
         if(Math.sqrt(rotAxisX * rotAxisX + rotAxisY * rotAxisY + rotAxisZ * rotAxisZ) != 1)
         {
@@ -262,10 +288,22 @@ public class SphereView  extends View
         double x = pt.x;
         double y = pt.y;
         double z = pt.z;
-        pt.x = (A * rotAxisX * rotAxisX + C) * x + (A * rotAxisX * rotAxisY - S * rotAxisZ) * y + (A * rotAxisX * rotAxisZ + S * rotAxisY) * z;
-        pt.y = (A * rotAxisX * rotAxisY + S * rotAxisZ) * x + (A * rotAxisY * rotAxisY + C) * y + (A * rotAxisY * rotAxisZ - S * rotAxisX) * z;
-        pt.z = (A * rotAxisX * rotAxisZ - S * rotAxisY) * x + (A * rotAxisY * rotAxisZ + S * rotAxisX) * y + (A * rotAxisZ * rotAxisZ + C) * z;
-        return pt;
+
+        if(createPoint)
+        {
+            TextPoint res = new TextPoint();
+            res.x = (A * rotAxisX * rotAxisX + C) * x + (A * rotAxisX * rotAxisY - S * rotAxisZ) * y + (A * rotAxisX * rotAxisZ + S * rotAxisY) * z;
+            res.y = (A * rotAxisX * rotAxisY + S * rotAxisZ) * x + (A * rotAxisY * rotAxisY + C) * y + (A * rotAxisY * rotAxisZ - S * rotAxisX) * z;
+            res.z = (A * rotAxisX * rotAxisZ - S * rotAxisY) * x + (A * rotAxisY * rotAxisZ + S * rotAxisX) * y + (A * rotAxisZ * rotAxisZ + C) * z;
+            return res;
+        }
+        else
+        {
+            pt.x = (A * rotAxisX * rotAxisX + C) * x + (A * rotAxisX * rotAxisY - S * rotAxisZ) * y + (A * rotAxisX * rotAxisZ + S * rotAxisY) * z;
+            pt.y = (A * rotAxisX * rotAxisY + S * rotAxisZ) * x + (A * rotAxisY * rotAxisY + C) * y + (A * rotAxisY * rotAxisZ - S * rotAxisX) * z;
+            pt.z = (A * rotAxisX * rotAxisZ - S * rotAxisY) * x + (A * rotAxisY * rotAxisZ + S * rotAxisX) * y + (A * rotAxisZ * rotAxisZ + C) * z;
+            return pt;
+        }
     }
 
 }
