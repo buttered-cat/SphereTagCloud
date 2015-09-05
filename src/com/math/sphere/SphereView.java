@@ -108,12 +108,12 @@ public class SphereView  extends View
         }
 
         try {
-            if(180.0 % ringCount != 0.0 || 180.0 % ptsPairCount != 0.0)
+            if(180.0 % ringCount != 0.0/* || 180.0 % ptsPairCount != 0.0*/)
                 throw new Exception();
         }
         catch(Exception e)
         {
-            points.add(new TextPoint(radius, 0, 0, "invalid ringCount or ptsPairCount!"));
+            points.add(new TextPoint(radius, 0, 0, "invalid ringCount"));
             return;
         }
 
@@ -248,6 +248,13 @@ public class SphereView  extends View
 
     TextPoint transform(TextPoint pt, double rTheta, double rotAxisX, double rotAxisY, double rotAxisZ)
     {
+        if(Math.sqrt(rotAxisX * rotAxisX + rotAxisY * rotAxisY + rotAxisZ * rotAxisZ) != 1)
+        {
+            double len = Math.sqrt(rotAxisX * rotAxisX + rotAxisY * rotAxisY + rotAxisZ * rotAxisZ);
+            rotAxisX = rotAxisX / len;
+            rotAxisY = rotAxisY / len;
+            rotAxisZ = rotAxisZ / len;
+        }
         double C = Math.cos(rTheta);
         double S = Math.sin(rTheta);
         double A = 1 - C;
