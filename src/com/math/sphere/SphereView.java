@@ -18,7 +18,7 @@ public class SphereView  extends View
     double radius;
     double originX;
     double originY;
-    static final double radiusCpst = 30;
+    static final double radiusCpst = 60;
     boolean isCoordInfoSet = false;
 
     ArrayList<TextPoint> points = new ArrayList<>();
@@ -27,15 +27,15 @@ public class SphereView  extends View
     Paint p=new Paint();
 
     static final int alphaMax = 255;
-    static final int alphaMin = 100;
-    static final int textSizeMax = 35;
+    static final int alphaMin = 80;
+    static final int textSizeMax = 30;
     static final int textSizeMin = 15;
     static final double maxSpeed = 3.0;
-    static final int refreshInterval = 20;
-    static final double minErr = 0.01;
+    static final int refreshInterval = 100;
+    static final double minErr = 0.05;
     static final double degreesMinErr = minErr;
     static final double deltaT = refreshInterval / 1000.0;
-    static final int ringCount = 2;
+    static final int ringCount = 4;
 //    static final int ptsPairCount = ringCount;
     static final int ptsPerRing = ringCount * 2;
 
@@ -98,11 +98,22 @@ public class SphereView  extends View
 
         ArrayList<String> tags = new ArrayList<>();
 
-        String input = new String("Chance is a word which is in common use in everyday living. " +
-                "The radio reports speaking of tomorrow`s weather may say: There is a sixty percent chance of rain." +
-                " You might say: There is a small chance that I shall live to be one hundred years old. " +
-                "Scientists also use the word chance. A seismologist may be interested in the question: " +
-                "What is the chance that there will be an earthquake of a certain size in Southern California next year?");
+        String input = new String("Chance word which common everyday living " +
+                "The radio reports speaking tomorrow weather There sixty percent chance." +
+                " You might There small chance that shall live hundred years. " +
+                "Scientists also word chance seismologist interested question " +
+                "What chance that there will earthquake certain size Southern California next year" +
+                "definition requires several comments First speak probability " +
+                "something happening only occurrence possible outcome some repeatable observation");
+
+        /*String input = new String("腹胀 富余 富裕 附属 附小 该书 该署 概述 概算 干草 干柴 " +
+                "干活 干货 干粮 干了 干松 干土 甘露 甘美 甘孜 甘作 赶集 赶紧 刚到 刚刚 刚走 钢板 " +
+                "凤冠 凤凰 凤梨 否定 否决 否认 否则 敷设 敷衍 肤浅 肤色 孵化 幅度 幅面 符合 服从 " +
+                "服毒 服过 服满 服气 服色 服食 服式 服侍 服饰 服输 服贴 服务 服药 服役 服用 服装 " +
+                "服罪 浮标 浮尘 浮沉 浮出 浮雕 浮吊 浮动 浮夸 浮力 浮漂 浮起 浮浅 浮桥 浮筒 浮土 " +
+                "浮现 浮想 浮游 浮肿 浮子 福安 福地 福分 福气 福特 福相 福星 福音 福州 福祉 抚爱 " +
+                "抚摸 抚摩 抚顺 抚慰 抚恤 抚养 腑脏 府第 府内 府上 腐败 腐臭 腐化 腐烂 腐乳 腐尸");*/
+
         String[] res = input.split("\\s+", ringCount * (/*ptsPairCount*/ptsPerRing - 1) * 2 + 2 + 1);
         for(int count = 0;count < res.length - 1; ++count)
         {
@@ -149,7 +160,10 @@ public class SphereView  extends View
             for(int curPt = 1; curPt < ptsPerRing && it.hasNext(); ++curPt)
             {
                 if(360 / ptsPerRing * curPt > 180 - degreesMinErr && 360 / ptsPerRing * curPt < 180 + degreesMinErr)
+                {
+                    formerPt = transform(formerPt, 2 * Math.PI / ptsPerRing, axisX, axisY, 0, true);
                     continue;
+                }
                 else
                 {
                     formerPt = transform(formerPt, 2 * Math.PI / ptsPerRing, axisX, axisY, 0, true);
@@ -159,6 +173,7 @@ public class SphereView  extends View
 
             }
         }
+
 
 //        for(int curRing = 0; curRing < ringCount/* && it.hasNext()*/; ++curRing)
 //        {
@@ -259,8 +274,8 @@ public class SphereView  extends View
 
         p.setTextAlign(Paint.Align.CENTER);
         p.setAntiAlias(true);
-        canvas.drawColor(Color.WHITE);
-        p.setColor(Color.BLACK);
+        canvas.drawColor(Color.BLACK);
+        p.setColor(Color.WHITE);
 
         for(Iterator it = points.iterator(); it.hasNext();)
         {
