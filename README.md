@@ -1,7 +1,7 @@
 SphereTagCloud
 -----------
 
-Android上的一个球形标签云，效果类似WordPress插件*3D Tag Cloud*，效果如下图（图片来自[华联网](http://www.huavi.cn/tag/3d/)）：
+Android上的一个球形标签云，效果类似WordPress插件*3D Tag Cloud*，如下图（图片来自[华联网](http://www.huavi.cn/tag/3d/)）：
 
 ![3D Tag Cloud](http://www.huavi.cn/wp-content/uploads/2017/06/wp-tag6.gif)
 
